@@ -1,0 +1,120 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using UI.Dates;
+using System;
+using Defective.JSON;
+using ZXing.Common;
+public class UIAdd : UIBasePanel
+{
+    public TMP_InputField inputPuzzleName;
+    public TMP_InputField inputPuzzleBrand;
+    public TMP_InputField inputPuzzlePieceCount;
+    public TMP_InputField inputTimeHours;
+    public TMP_InputField inputTimeMinutes;
+    public TMP_InputField inputTimeSeconds;
+    public Button buttonSave;
+    public Button buttonBack;
+    public Button buttonScan;
+    public DatePicker datePicker;
+    public TMP_Dropdown dropdownTeam;
+    public UITeamMemberSelector teamMemberSelector1;
+    public UITeamMemberSelector teamMemberSelector2;
+    public UITeamMemberSelector teamMemberSelector3;
+
+    void Start()
+    {
+        buttonBack.onClick.AddListener(() =>
+        {
+            UIManager.instance.HidePanel("UIAdd");
+            UIManager.instance.ShowPanel("UIHome");
+            //UIManager.instance.ShowPanel("UIViewResults");
+        });
+
+        buttonScan.onClick.AddListener(() =>
+        {
+            UIManager.instance.ShowPanel("UIScan");
+        });
+
+        dropdownTeam.onValueChanged.AddListener((value) =>
+        {
+            OnSelectTeamSize(value);
+        });
+
+        inputPuzzleName.onValueChanged.AddListener((value) => 
+        {
+            buttonSave.interactable = !string.IsNullOrEmpty(value) && !string.IsNullOrEmpty(inputPuzzleBrand.text);
+        });
+
+        inputPuzzleName.onValueChanged.AddListener((value) =>
+        {
+            buttonSave.interactable = !string.IsNullOrEmpty(value) && !string.IsNullOrEmpty(inputPuzzleName.text);
+        });
+
+        EventMsgManager.instance.AddListener(EventMsgManager.GameEventIDs.BarcodeScanned, OnBarCodeScanned);
+    }
+
+
+    public override void Show()
+    {
+        base.Show(); 
+        OnSelectTeamSize(0);
+        datePicker.SelectedDate = DateTime.Now;
+        buttonSave.interactable = false;
+    }
+
+    private void OnSelectTeamSize(int index)
+    {
+        int numMembers = 0;
+        switch (index)
+        {
+            case 1:
+                numMembers = 1;
+                break;
+            case 2:
+                numMembers = 3;
+                break;
+        }
+
+        teamMemberSelector1.gameObject.SetActive(numMembers > 0);
+        teamMemberSelector2.gameObject.SetActive(numMembers > 2);
+        teamMemberSelector3.gameObject.SetActive(numMembers > 2);
+
+    }
+
+
+    void OnBarCodeScanned(EventMsgManager.GameEventArgs args)
+    {
+        EventMsgManager.BarCodeScannedArgs barCodeScannedArgs = (EventMsgManager.BarCodeScannedArgs)args;
+
+
+        JSONObject jSONObject = new JSONObject(barCodeScannedArgs.scanData);
+
+        JSONObject jItems = jSONObject.GetField("items");
+        if (jItems != null)
+        {
+            JSONObject jEntry = jItems.list[0];
+            string title = "";
+            jEntry.GetField(ref title, "title");
+
+            int pc = StringUtils.GetNumberFromString(title);
+
+            inputPuzzlePieceCount.text = pc.ToString();
+
+            // Remove the number from the title
+
+            
+
+            int s = title.IndexOf(pc.ToString());
+            if (s < 10)
+            {
+                // remove from front
+                title = title.Substring(s + pc.ToString().Length + 1);
+            }
+
+            inputPuzzleName.text = title;
+        }
+    }
+}

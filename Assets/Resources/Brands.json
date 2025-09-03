@@ -1,0 +1,119 @@
+{
+	"BrandList": [
+		{
+			"BrandResource": {
+				"BrandName": "Ravensburger"
+			}
+		},
+		{
+			"BrandResource": {
+				"BrandName": "Buffalo Games"
+			}
+		},
+		{
+			"BrandResource": {
+				"BrandName": "Cobble Hill"
+			}
+		},
+		{
+			"BrandResource": {
+				"BrandName": "Dowdle"
+			}
+		},
+		{
+			"BrandResource": {
+				"BrandName": "EUROGRAPHICS"
+			}
+		},
+		{
+			"BrandResource": {
+				"BrandName": "Clementoni"
+			}
+		},
+		{
+			"BrandResource": {
+				"BrandName": "Charley Harper"
+			}
+		},
+		{
+			"BrandResource": {
+				"BrandName": "New York Puzzle Company"
+			}
+		},
+		{
+			"BrandResource": {
+				"BrandName": "Pomegranate"
+			}
+		},
+		{
+			"BrandResource": {
+				"BrandName": "Springbok"
+			}
+		},
+		{
+			"BrandResource": {
+				"BrandName": "Heritage Puzzle"
+			}
+		},
+		{
+			"BrandResource": {
+				"BrandName": "Castorland"
+			}
+		},
+		{
+			"BrandResource": {
+				"BrandName": "Cloudberries"
+			}
+		},
+		{
+			"BrandResource": {
+				"BrandName": "Gibsons"
+			}
+		},
+		{
+			"BrandResource": {
+				"BrandName": "MasterPieces"
+			}
+		},
+		{
+			"BrandResource": {
+				"BrandName": "PuzzleTwist"
+			}
+		},
+		{
+			"BrandResource": {
+				"BrandName": "SunsOut"
+			}
+		},
+		{
+			"BrandResource": {
+				"BrandName": "White Mountain Puzzles"
+			}
+		},
+		{
+			"BrandResource": {
+				"BrandName": "Cra-z-art"
+			}
+		},
+		{
+			"BrandResource": {
+				"BrandName": "Ceaco"
+			}
+		},
+		{
+			"BrandResource": {
+				"BrandName": "De Boored"
+			}
+		},
+		{
+			"BrandResource": {
+				"BrandName": "Vivid"
+			}
+		},
+		{
+			"BrandResource": {
+				"BrandName": "Other"
+			}
+		}
+	]
+}
