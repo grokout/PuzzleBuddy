@@ -18,7 +18,8 @@ public class EventMsgManager : Singleton<EventMsgManager>
         EntryRemoved,
         FastestTimeFound,
         LoadComplete,
-        BarcodeScanned
+        BarcodeScanned,
+        BrandChanged
     }
 
     public class GameEventArgs
@@ -74,6 +75,14 @@ public class EventMsgManager : Singleton<EventMsgManager>
         public string scanData;
     }
 
+    public class BrandArgs : GameEventArgs
+    {
+        public Brand brand;
+        public BrandArgs(Brand brand)
+        {
+            this.brand = brand;
+        }
+    }
 
     public delegate void GameEventCallback(GameEventArgs inEventArge);
     Hashtable m_Events = new Hashtable();

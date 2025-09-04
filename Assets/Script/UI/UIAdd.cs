@@ -18,6 +18,7 @@ public class UIAdd : UIBasePanel
     public Button buttonSave;
     public Button buttonBack;
     public Button buttonScan;
+    public Button buttonBrandSelect;
     public DatePicker datePicker;
     public TMP_Dropdown dropdownTeam;
     public UITeamMemberSelector teamMemberSelector1;
@@ -53,7 +54,10 @@ public class UIAdd : UIBasePanel
             buttonSave.interactable = !string.IsNullOrEmpty(value) && !string.IsNullOrEmpty(inputPuzzleName.text);
         });
 
+        buttonBrandSelect.onClick.AddListener(() => UIManager.instance.ShowPanel("UISelectBrand"));
+
         EventMsgManager.instance.AddListener(EventMsgManager.GameEventIDs.BarcodeScanned, OnBarCodeScanned);
+        EventMsgManager.instance.AddListener(EventMsgManager.GameEventIDs.BrandChanged, OnBrandChanged);
     }
 
 
@@ -116,5 +120,11 @@ public class UIAdd : UIBasePanel
 
             inputPuzzleName.text = title;
         }
+    }
+
+    void OnBrandChanged(EventMsgManager.GameEventArgs args)
+    {
+        EventMsgManager.BrandArgs brandArgs = (EventMsgManager.BrandArgs)args;
+        inputPuzzleBrand.text = brandArgs.brand.brandName;
     }
 }
