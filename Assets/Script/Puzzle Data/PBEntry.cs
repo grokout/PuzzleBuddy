@@ -257,7 +257,6 @@ public class PBEntry
     public void SetDBId(int dbId)
     {
         this.dbId = dbId;
-        pBPuzzle.Save();
     }
 
     public void Updated()

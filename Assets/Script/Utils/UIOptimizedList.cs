@@ -157,7 +157,7 @@ public class UIOptimizedList : MonoBehaviour
                     data.marker = GetMarker();
                     data.marker.SetData(data);
 
-                    Debug.Log("Create Marker at " + data.yPos);
+                    //Debug.Log("Create Marker at " + data.yPos);
                 }
             }
             else if (data.marker != null)

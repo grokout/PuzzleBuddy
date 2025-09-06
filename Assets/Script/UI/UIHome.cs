@@ -32,7 +32,7 @@ public class UIHome : UIBasePanel
     }
 
 
-    public override void Show()
+    public override void Show(PanelData panelData = null)
     {
         base.Show();
         UIManager.instance.ShowPanel("UIViewResults");

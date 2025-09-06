@@ -17,7 +17,7 @@ public class UIViewResults : UIBasePanel
 
     }
 
-    public override void Show()
+    public override void Show(PanelData panelData = null)
     {
         base.Show();
         DisplayList();
@@ -62,18 +62,3 @@ public class UIViewResults : UIBasePanel
     }
 }
 
-public class OPListPBPuzzleData : OptiizedListData
-{
-    public PBPuzzle pBPuzzle { get; set; }
-    public UIOptimizedListPrefab marker = null;
-
-    public OPListPBPuzzleData(PBPuzzle entry)
-    {  
-        this.pBPuzzle = entry; 
-    }
-
-    public override float GetHeight()
-    {
-        return 60 + (pBPuzzle.entries.Count * 40);
-    }
-}

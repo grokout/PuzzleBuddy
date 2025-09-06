@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class PBPuzzleManager : Singleton<PBPuzzleManager>
 {
@@ -14,6 +15,8 @@ public class PBPuzzleManager : Singleton<PBPuzzleManager>
     public Dictionary<string, Dictionary<string, Dictionary<int, PBPuzzle>>> puzzles { get {  return _puzzles; } }
 
    
+
+    private int _fetchCount = 0;
 
     string GetSearchName(string name)
     {
@@ -49,6 +52,8 @@ public class PBPuzzleManager : Singleton<PBPuzzleManager>
             }
         }
     }
+
+
     /*
     public void RemovePuzzle(PBPuzzle pBPuzzle)
     {
@@ -83,13 +88,27 @@ public class PBPuzzleManager : Singleton<PBPuzzleManager>
 
         foreach (JSONObject jPuzzle in jRoot.list)
         {
-            PBEntry pBEntry = new PBEntry();
-            pBEntry.Load(jPuzzle);
+            PBPuzzle pBPuzzle = new PBPuzzle();
+            pBPuzzle.Load(jPuzzle);
 
-            AddTime(pBEntry, false);
-        }
+            string searchName = GetSearchName(pBPuzzle.name);
+            if (!_puzzles.ContainsKey(pBPuzzle.brand))
+            {
+                _puzzles.Add(pBPuzzle.brand, new Dictionary<string, Dictionary<int, PBPuzzle>>());
+            }
 
-        
+            if (!_puzzles[pBPuzzle.brand].ContainsKey(searchName))
+            {
+                _puzzles[pBPuzzle.brand].Add(searchName, new Dictionary<int, PBPuzzle>());
+            }
+
+            if (!_puzzles[pBPuzzle.brand][searchName].ContainsKey(pBPuzzle.upc))
+            {
+                _puzzles[pBPuzzle.brand][searchName].Add(pBPuzzle.upc, pBPuzzle);                
+            }
+            EventMsgManager.instance.SendEvent(EventMsgManager.GameEventIDs.UpdateEntriesForPuzzle, new EventMsgManager.PuzzleArgs(pBPuzzle));
+        }        
+
     }
 
     public void Save()
@@ -102,10 +121,8 @@ public class PBPuzzleManager : Singleton<PBPuzzleManager>
             {
                 foreach (KeyValuePair<int, PBPuzzle> upcPair in namePair.Value)
                 {
-                    foreach (PBEntry entry in upcPair.Value.entries)
-                    {
-                        jArray.Add(entry.Serialize());
-                    }
+                    jArray.Add(upcPair.Value.Serialize());
+   
                 }
             }
         }
@@ -183,12 +200,19 @@ public class PBPuzzleManager : Singleton<PBPuzzleManager>
 
         // then check if we need to grab any from the db
 
+        bool shownStatus = false;
         foreach (int id in dbIds)
         {
             if (!HasDBId(id))
             {
                 Debug.Log("Grabbing from DB " + id);
                 FetchDBEntry(id);
+                _fetchCount++;
+                if (!shownStatus)
+                {
+                    shownStatus = true;
+                    UIManager.instance.ShowPanel("UIStatus", new UIStatusData("Updating from database"));
+                }
             }
         }
     }
@@ -276,6 +300,13 @@ public class PBPuzzleManager : Singleton<PBPuzzleManager>
             PBPuzzle pBPuzzle = GetPuzzle(pBEntry.brand, pBEntry.puzzleName, pBEntry.puzzleUpc);
             EventMsgManager.instance.SendEvent(EventMsgManager.GameEventIDs.UpdateEntriesForPuzzle, new EventMsgManager.PuzzleArgs(pBPuzzle)); 
         }
+
+        --_fetchCount;
+        if (_fetchCount == 0)
+        {
+            UIManager.instance.HidePanel("UIStatus");
+        }
+
     }
    
 

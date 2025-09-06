@@ -54,7 +54,7 @@ public class UIScan : UIBasePanel
     }
 
 
-    public override void Show()
+    public override void Show(PanelData panelData = null)
     {
         base.Show();
         if (_barcodeScanner != null)

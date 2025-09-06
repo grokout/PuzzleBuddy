@@ -15,7 +15,7 @@ public class UIBrandSelect : UIBasePanel
         buttonBack.onClick.AddListener(() => UIManager.instance.HidePanel("UISelectBrand"));
     }
 
-    public override void Show()
+    public override void Show(PanelData panelData = null)
     {
         base.Show();
         

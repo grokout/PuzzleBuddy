@@ -24,6 +24,9 @@ public class UIBrandMarker : MonoBehaviour
     {
         _brand = brand;
         textTitle.text = brand.brandName;
-    }    
+    }
+
+
 
 }
+

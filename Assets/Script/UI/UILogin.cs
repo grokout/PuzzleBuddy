@@ -29,7 +29,7 @@ public class UILogin : UIBasePanel
         //buttonSkip.onClick.AddListener(OnSkip);
     }
 
-    public override void Show()
+    public override void Show(PanelData panelData = null)
     {
         base.Show();
 

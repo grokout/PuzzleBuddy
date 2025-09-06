@@ -9,17 +9,20 @@ public class UIResultsGroup : UIOptimizedListPrefab
     public Image imagePuzzle;
     public TextMeshProUGUI textLabel;
     public UIListController listResults;
+    public Button buttonExpand;
 
-    private Dictionary<int, PBPuzzle> _puzzles;
+    private PBPuzzle _pBPuzzle;
+
+
     void Start()
     {
         
     }
 
-    public void Set(string puzzlename, Dictionary<int , PBPuzzle> puzzles)
+    void Set(PBPuzzle pBPuzzle)
     {
-        _puzzles = puzzles;
-        textLabel.text = puzzlename;
+        _pBPuzzle = pBPuzzle;
+        textLabel.text = _pBPuzzle.name;
         DisplayList();
     }
 
@@ -27,19 +30,41 @@ public class UIResultsGroup : UIOptimizedListPrefab
     void DisplayList()
     {
         listResults.ClearAll();
-        foreach (KeyValuePair<int, PBPuzzle> pair in _puzzles)
-        {
-            foreach (PBEntry entry in pair.Value.entries)
+
+            foreach (PBEntry entry in _pBPuzzle.entries)
             {
                 UIResultsRow uIResultsRow = listResults.CreateMarker<UIResultsRow>();
                 uIResultsRow.Set(entry);
             }
-        }
+        
         listResults.ResizeContainer();
 
         RectTransform rectTransform = GetComponent<RectTransform>();
         Vector2 size = rectTransform.sizeDelta;
         size.y = listResults.GetComponent<RectTransform>().sizeDelta.y + 60; 
         rectTransform.sizeDelta = size;
+    }
+
+    public override void SetData(OPListPBPuzzleData data)
+    {
+        base.SetData(data);
+        OPListPBPuzzleData oPListPBPuzzleData = (OPListPBPuzzleData)data;
+        Set(oPListPBPuzzleData.pBPuzzle);
+    }
+}
+
+public class OPListPBPuzzleData : OptiizedListData
+{
+    public PBPuzzle pBPuzzle { get; set; }
+    public UIOptimizedListPrefab marker = null;
+
+    public OPListPBPuzzleData(PBPuzzle entry)
+    {
+        this.pBPuzzle = entry;
+    }
+
+    public override float GetHeight()
+    {
+        return 60 + (pBPuzzle.entries.Count * 40);
     }
 }

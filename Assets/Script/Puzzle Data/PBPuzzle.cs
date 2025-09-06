@@ -1,7 +1,7 @@
 using Defective.JSON;
 using System.Collections.Generic;
 using System.Linq;
-
+using UnityEngine;
 
 public class PBPuzzleCreationArgs
 {
@@ -17,7 +17,6 @@ public class PBPuzzle
     public string name;
     public int upc;
     public int pieceCount;
-    public EventPlayerType eventPlayerType = EventPlayerType.Solo;
     public List<PBEntry> entries = new List<PBEntry> ();
 
     protected bool _allLoaded = false;
@@ -42,24 +41,11 @@ public class PBPuzzle
         //LoadAll();
         entry.pBPuzzle = this;
         entries.Add(entry);
-
-        if (entry.userId == OnlineManager.instance.GetUserId())
-        {
-            Save();
-
-            // update DB
-            if (entry.dbId <= 0)
-            {
-                //SuprebaseOnline.instance.AddEntry(entry);
-            }
-        }
     }
 
     public void Remove(PBEntry entry)
     {
         entries.Remove(entry);
-        Save();
-
         // Remove From Online
         if (entry.dbId > -1)
         {
@@ -74,99 +60,57 @@ public class PBPuzzle
     }
 
 
-    public void Updated()
+
+
+    public JSONObject Serialize()
     {
-        Save();
-    }
+        JSONObject jSONObject = new JSONObject();
 
-    public virtual void Save()
-    {
-       /* _configFile = new ConfigFile();
-
-        _configFile.SetValue("Entrys", "JSON", GetJson());
-        _configFile.SetValue("Entrys", "brand", brand);
-        _configFile.SetValue("Entrys", "name", name);
-        _configFile.SetValue("Entrys", "pieceCount", pieceCount);
-
-        _configFile.Save("user://Puzzle_" + GetKey() + ".cfg");*/
-    }
-    /*
-    string GetJson()
-    {
-        JSONArray jArray = new JSONArray();
-
-        for (int x = 0; x < entries.Count; x++)
+        JSONObject jArray = new JSONObject(JSONObject.Type.Array);
+        jSONObject.SetField("entries", jArray);
+        foreach (PBEntry entry in entries)
         {
-            if (entries[x].userId == OnlineManager.instance.GetUserId())
+            if (entry.userId == OnlineManager.instance.GetUserId())
             {
-                jArray.Add("Entry", entries[x].GetJson());
+                jArray.Add(entry.Serialize());
             }
         }
-
-        return jArray.ToString();
-    }*/
-    /*
-    public virtual void LoadAll()
-    {
-        if (_allLoaded)
-        {
-            return;
-        }
-        if (_configFile == null)
-        {
-            return;
-        }
-
-        string jStr = (string)_configFile.GetValue("Entrys", "JSON");
-
-        JSONNode jRoot = JSONNode.Parse(jStr);
-
-        if (jRoot != null && jRoot.Count > 0)
-        {
-            for (int i = 0; i < jRoot.Count; i++)
-            {
-                LoadEntry(jRoot[i]);
-            }
-        }
-        brand = (string)_configFile.GetValue("Entrys", "brand");
-        name = (string)_configFile.GetValue("Entrys", "name");
-        pieceCount = (int)_configFile.GetValue("Entrys", "pieceCount");
-        _allLoaded = true;
-
-    }
-    */
-    protected virtual void LoadEntry(JSONObject jEntry)
-    {
-        PBEntry entry = new PBEntry();
-        entry.Load(jEntry);
-        entry.pBPuzzle = this;
-        entries.Add(entry);
+        jSONObject.SetField("brand", brand);
+        jSONObject.SetField("name", name);
+        jSONObject.SetField("pieceCount", pieceCount);
+        jSONObject.SetField("upc", upc);
+        return jSONObject;
     }
 
     
-    // loads only some parts
-    public void PreLoad(string brand, string puzzleName)
+    public void Load(JSONObject jPuzzle)
     {
-        /*this.brand = brand;
-        this.name = puzzleName; 
+        jPuzzle.GetField(ref brand, "brand");
+        jPuzzle.GetField(ref name, "name");
+        jPuzzle.GetField(ref pieceCount, "pieceCount");
+        jPuzzle.GetField(ref upc, "upc");
 
-        Error err = _configFile.Load("user://Puzzle_" + GetKey() + ".cfg");
-
-        // If the file didn't load, ignore it.
-        if (err != Error.Ok)
+        JSONObject jArray = jPuzzle.GetField("entries");
+        if (jArray != null && jArray.list != null)
         {
-            _configFile = null;
-            return;
+            foreach (JSONObject jEntry in jArray.list)
+            {
+                PBEntry pBEntry = new PBEntry();
+                pBEntry.Load(jEntry);
+
+                AddTime(pBEntry);
+            }
+        }
+        else
+        {
+            Debug.LogWarning("No entries for " + name);
         }
 
-        brand = (string)_configFile.GetValue("Entrys", "brand");
-        name = (string)_configFile.GetValue("Entrys", "name");
-        pieceCount = (int)_configFile.GetValue("Entrys", "pieceCount");
 
-
-        //_configFile.Clear();
-       // _configFile.Save("user://Puzzle_" + key + ".cfg");*/
     }
+
+    
+  
     /*
     public string GetInfo()
     {

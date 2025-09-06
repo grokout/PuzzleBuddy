@@ -33,13 +33,13 @@ public class UIManager : SingletonMonoBehaviour<UIManager>
         EventMsgManager.instance.SendEvent(EventMsgManager.GameEventIDs.LoadComplete);
     }
 
-    public void ShowPanel(string panelName)
+    public void ShowPanel(string panelName, PanelData panelData = null)
     {
         foreach (UIBasePanel panel in panels)
         {
             if (panel.name == panelName)
             {
-                panel.Show();
+                panel.Show(panelData);
             }
         }
     }
@@ -55,5 +55,11 @@ public class UIManager : SingletonMonoBehaviour<UIManager>
         }
     }
 
+
+}
+
+
+public class PanelData
+{
 
 }

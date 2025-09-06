@@ -115,7 +115,7 @@ public class UIAdd : UIBasePanel
     }
 
 
-    public override void Show()
+    public override void Show(PanelData panelData = null)
     {
         base.Show(); 
         OnSelectTeamSize(0);

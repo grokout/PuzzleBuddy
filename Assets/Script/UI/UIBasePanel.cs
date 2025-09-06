@@ -7,7 +7,7 @@ public class UIBasePanel : MonoBehaviour
     public bool startOpen = false;
 
 
-    public virtual void Show()
+    public virtual void Show(PanelData panelData = null)
     {
         gameObject.SetActive(true);
     }
