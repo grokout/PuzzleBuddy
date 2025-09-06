@@ -5,7 +5,8 @@ using UnityEngine;
 public class UIOptimizedListPrefab : MonoBehaviour
 {
 
-    private OPListPBPuzzleData _data;
+    public UIOptimizedList uIOptimizedList;
+    protected OPListPBPuzzleData _data;
 
     
 

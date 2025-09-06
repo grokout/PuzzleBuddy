@@ -82,6 +82,7 @@ public class UIOptimizedList : MonoBehaviour
             obj.transform.SetParent(transform);
             obj.gameObject.SetActive(startActive);
             obj.transform.localScale = new Vector3(1, 1, 1);
+            obj.uIOptimizedList = this;
 
             _pool.Add(obj);
         }
@@ -131,7 +132,7 @@ public class UIOptimizedList : MonoBehaviour
     }
 
 
-    void UpdateVisualList()
+    public void UpdateVisualList()
     {
         RectTransform rectTransform = GetComponent<RectTransform>();
         // find out which ones should be visible
@@ -154,11 +155,10 @@ public class UIOptimizedList : MonoBehaviour
             {
                 if (data.marker == null)
                 {
-                    data.marker = GetMarker();
-                    data.marker.SetData(data);
-
-                    //Debug.Log("Create Marker at " + data.yPos);
+                    data.marker = GetMarker();                   
                 }
+
+                data.marker.SetData(data);
             }
             else if (data.marker != null)
             {

@@ -1,4 +1,5 @@
 using Defective.JSON;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -22,6 +23,16 @@ public class PBPuzzle
     protected bool _allLoaded = false;
 
     public bool loadedFriendsData = false;
+
+    [Flags]
+    public enum VisualFlags
+    {
+        None = 0,
+        Expanded = 1 << 1
+    }
+
+
+    private VisualFlags _visualFlags;
 
     public PBPuzzle()
     {
@@ -79,6 +90,8 @@ public class PBPuzzle
         jSONObject.SetField("name", name);
         jSONObject.SetField("pieceCount", pieceCount);
         jSONObject.SetField("upc", upc);
+        jSONObject.SetField("_visualFlags", (int)_visualFlags);
+        
         return jSONObject;
     }
 
@@ -89,6 +102,9 @@ public class PBPuzzle
         jPuzzle.GetField(ref name, "name");
         jPuzzle.GetField(ref pieceCount, "pieceCount");
         jPuzzle.GetField(ref upc, "upc");
+        int vf = 0;
+        jPuzzle.GetField(ref vf, "_visualFlags");
+        _visualFlags = (VisualFlags)vf; 
 
         JSONObject jArray = jPuzzle.GetField("entries");
         if (jArray != null && jArray.list != null)
@@ -109,8 +125,29 @@ public class PBPuzzle
 
     }
 
-    
-  
+    public bool ExpandedEntries()
+    {
+        return _visualFlags.HasFlag(VisualFlags.Expanded);
+    }
+
+    public void SetExpandedEntries(bool expanded)
+    {
+        if (expanded)
+        {
+            _visualFlags |= VisualFlags.Expanded;
+        }
+        else
+        {
+            _visualFlags &= ~VisualFlags.Expanded;
+        }
+    }
+
+    public void ToggleExpand()
+    {
+        SetExpandedEntries(!ExpandedEntries());
+    }
+
+
     /*
     public string GetInfo()
     {

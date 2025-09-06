@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Linq;
 
 public class UIResultsGroup : UIOptimizedListPrefab
 {
@@ -16,6 +17,7 @@ public class UIResultsGroup : UIOptimizedListPrefab
 
     void Start()
     {
+        buttonExpand.onClick.AddListener(ToggleExpand);
         
     }
 
@@ -31,18 +33,48 @@ public class UIResultsGroup : UIOptimizedListPrefab
     {
         listResults.ClearAll();
 
-            foreach (PBEntry entry in _pBPuzzle.entries)
+        buttonExpand.gameObject.SetActive(_pBPuzzle.entries.Count > 1);
+
+
+        buttonExpand.transform.rotation = _pBPuzzle.ExpandedEntries() ? Quaternion.identity * Quaternion.Euler(0, 0, 90) :  Quaternion.identity * Quaternion.Euler(0,0,180);
+
+        // Sort. let sort by date newest first for now
+        List<PBEntry> sortedList = new List<PBEntry>(_pBPuzzle.entries);
+        sortedList = sortedList.OrderBy(p => p.GetTime()).ToList();
+
+       
+        
+        foreach (PBEntry entry in sortedList)
+        {
+            UIResultsRow uIResultsRow = listResults.CreateMarker<UIResultsRow>();
+            uIResultsRow.Set(entry);
+
+            if (!_pBPuzzle.ExpandedEntries())
             {
-                UIResultsRow uIResultsRow = listResults.CreateMarker<UIResultsRow>();
-                uIResultsRow.Set(entry);
+                break;
             }
+        }
+        
+
         
         listResults.ResizeContainer();
 
         RectTransform rectTransform = GetComponent<RectTransform>();
         Vector2 size = rectTransform.sizeDelta;
-        size.y = listResults.GetComponent<RectTransform>().sizeDelta.y + 60; 
+        size.y = _data.GetHeight();
         rectTransform.sizeDelta = size;
+    }
+
+    void ToggleExpand()
+    {
+        _pBPuzzle.ToggleExpand();
+
+        DisplayList();
+
+        uIOptimizedList.ResizeContainer();  
+        uIOptimizedList.UpdateVisualList();
+        PBPuzzleManager.instance.Save();
+
     }
 
     public override void SetData(OPListPBPuzzleData data)
@@ -65,6 +97,11 @@ public class OPListPBPuzzleData : OptiizedListData
 
     public override float GetHeight()
     {
-        return 60 + (pBPuzzle.entries.Count * 40);
+        int c = pBPuzzle.entries.Count;
+        if (c > 1 && !pBPuzzle.ExpandedEntries())
+        {
+            c = 1;
+        }
+        return 60 + (c * 40);
     }
 }
