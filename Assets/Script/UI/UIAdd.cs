@@ -21,6 +21,7 @@ public class UIAdd : UIBasePanel
     public Button buttonBack;
     public Button buttonScan;
     public Button buttonBrandSelect;
+    public Button buttonPieceCountSelect;
     public DatePicker datePicker;
     public TMP_Dropdown dropdownTeam;
     public UITeamMemberSelector teamMemberSelector1;
@@ -57,8 +58,10 @@ public class UIAdd : UIBasePanel
         });
 
         buttonBrandSelect.onClick.AddListener(() => UIManager.instance.ShowPanel("UISelectBrand"));
+        buttonPieceCountSelect.onClick.AddListener(() => UIManager.instance.ShowPanel("UISelectPieceCount"));
 
         EventMsgManager.instance.AddListener(EventMsgManager.GameEventIDs.BarcodeScanned, OnBarCodeScanned);
+        EventMsgManager.instance.AddListener(EventMsgManager.GameEventIDs.CountChanged, OnCountChanged);
         EventMsgManager.instance.AddListener(EventMsgManager.GameEventIDs.BrandChanged, OnBrandChanged);
 
         buttonSave.onClick.AddListener(() =>
@@ -196,4 +199,10 @@ public class UIAdd : UIBasePanel
         EventMsgManager.BrandArgs brandArgs = (EventMsgManager.BrandArgs)args;
         inputPuzzleBrand.text = brandArgs.brand.brandName;
     }
+
+    void OnCountChanged(EventMsgManager.GameEventArgs args)
+    {
+        EventMsgManager.CountArgs countArgs = (EventMsgManager.CountArgs)args;  
+        inputPuzzlePieceCount.text = countArgs.count.ToString();
+    }    
 }

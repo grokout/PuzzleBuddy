@@ -480,4 +480,13 @@ public class PBPuzzleManager : Singleton<PBPuzzleManager>
             Save();
         }        
     }*/
+
+    public List<int> GetCounts()
+    {
+        List<int> counts = new List<int>() { 200,300, 500, 750, 1000}; 
+
+        
+
+        return counts;
+    }
 }

@@ -19,7 +19,8 @@ public class EventMsgManager : Singleton<EventMsgManager>
         FastestTimeFound,
         LoadComplete,
         BarcodeScanned,
-        BrandChanged
+        BrandChanged,
+        CountChanged
     }
 
     public class GameEventArgs
@@ -81,6 +82,15 @@ public class EventMsgManager : Singleton<EventMsgManager>
         public BrandArgs(Brand brand)
         {
             this.brand = brand;
+        }
+    }
+
+    public class CountArgs : GameEventArgs
+    {
+        public int count;
+        public CountArgs(int count)
+        {
+            this.count = count;
         }
     }
 
