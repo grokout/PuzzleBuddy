@@ -35,7 +35,7 @@ public class OnlineManager : Singleton<OnlineManager>
 
     public void RegisterNewUser(string username, string password)
     {
-  //        SuprebaseOnline.instance.RegisterNewUser(username, password);
+          SuprebaseOnline.instance.RegisterNewUser(username, password);
     }
 
     public string GetUserId()

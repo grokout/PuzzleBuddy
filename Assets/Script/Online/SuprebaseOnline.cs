@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Defective.JSON;
 using System.Collections;
 using UnityEngine.Networking;
-using UnityEditor.PackageManager.Requests;
 
 public class SuprebaseOnline : SingletonMonoBehaviour<SuprebaseOnline>
 {
@@ -148,6 +146,31 @@ public class SuprebaseOnline : SingletonMonoBehaviour<SuprebaseOnline>
             case RequestType.FetchEntry:
                 PBPuzzleManager.instance.OnFetchEntry(body);
                 break;
+            case RequestType.Submit:
+                {                 
+                    string record = body.Replace("(", "").Replace(")", "").Replace("\"", "").Replace("\\", "");
+                    List<string> cols = record.Split(',').ToList<string>();
+                    int dbId = -1;
+                    int.TryParse(cols[0], out dbId);
+                    _requestQueue[0].pBEntry.SetDBId(dbId);
+                    PBPuzzleManager.instance.Save();
+                }
+                break;
+            case RequestType.RegisterNewUser:
+                {
+                    string ret = body;
+                    if (ret.ToLower().Contains("error"))
+                    {
+                        EventMsgManager.instance.SendEvent(EventMsgManager.GameEventIDs.RegisterFailed, new EventMsgManager.ErrorArgs(ret));
+                    }
+                    else
+                    {
+                        ret = ret.Replace("\"", "").Replace(" ", "");
+                        int.TryParse(ret, out OnlineManager.instance.myAccount.userId);
+                        EventMsgManager.instance.SendEvent(EventMsgManager.GameEventIDs.LoginSuccess);
+                    }
+                }
+                break;
         }
 
 
@@ -166,16 +189,7 @@ public class SuprebaseOnline : SingletonMonoBehaviour<SuprebaseOnline>
         {
 
 
-            case RequestType.Submit:
-                {
-                    string bdy = body.GetStringFromUtf8();
-                    string record = bdy.Replace("(", "").Replace(")", "").Replace("\"", "").Replace("\\", "");
-                    List<string> cols = record.Split(',').ToList<string>();
-                    int dbId = -1;
-                    int.TryParse(cols[0], out dbId);    
-                    _requestQueue[0].pBEntry.SetDBId(dbId);
-                }
-                break;
+
             case RequestType.UpdateEntry:
                 GD.Print(body.GetStringFromUtf8());
                 break;
@@ -185,21 +199,7 @@ public class SuprebaseOnline : SingletonMonoBehaviour<SuprebaseOnline>
             case RequestType.Test:
                 GD.Print(body.GetStringFromUtf8());
                 break;
-            case RequestType.RegisterNewUser:
-                {
-                    string ret = body.GetStringFromUtf8();
-                    if (ret.ToLower().Contains("error"))
-                    {
-                        EventMsgManager.instance.SendEvent(EventMsgManager.GameEventIDs.RegisterFailed, new EventMsgManager.ErrorArgs(ret));
-                    }
-                    else
-                    {
-                        ret = ret.Replace("\"", "").Replace(" ", "");
-                        int.TryParse(ret, out OnlineManager.instance.myAccount.userId);
-                        EventMsgManager.instance.SendEvent(EventMsgManager.GameEventIDs.LoginSuccess);
-                    }
-                }
-                break;
+
 
             case RequestType.GetDisplayName:
                 {
@@ -260,25 +260,23 @@ public class SuprebaseOnline : SingletonMonoBehaviour<SuprebaseOnline>
             KickOffNextInQueue();
         }
         
-    }
+    }*/
 
     public void AddEntry(PBEntry entry)
     {
-        GD.Print("DB AddEntry");
+        Debug.Log("DB AddEntry");
 
         string userId = OnlineManager.instance.GetUserId().ToString();
-        string jsons = "{\"userid\": \""+ userId + "\",\"b_dnf\": "+ (entry.dnf ? 1 : 0) + ",\"n_placed\": "+ entry.placed.ToString() + ",\"f_time\": " + entry.GetTime().ToString() + ",\"d_date\": \"" + entry.date.ToString() + "\",\"t_puzzle_brand\": \"" + entry.pBPuzzle.brand + "\",\"t_puzzle_name\": \"" + entry.pBPuzzle.name + "\",\"n_puzzle_piece_count\": \"" + entry.pBPuzzle.pieceCount.ToString() + "\",\"t_teammate_1\": \"" + entry.GetTeamMemberName(0) + "\",\"t_teammate_2\": \"" + entry.GetTeamMemberName(1) + "\",\"t_teammate_3\": \"" + entry.GetTeamMemberName(2) + "\"}";
-        string[] headers = new string[] { "apikey: " + SUPABASE_PUBLIC_KEY };
-        string url = DBURL + "SubmitPBEntry2";
-
-        GD.Print(jsons);
+        string jsons = "{\"userid\": \""+ userId + "\",\"b_dnf\": "+ (entry.dnf ? 1 : 0) + ",\"n_placed\": "+ entry.placed.ToString() + ",\"f_time\": " + entry.GetTime().ToString() + ",\"d_date\": \"" + entry.date.ToString("yyyy-MM-dd") + "\",\"t_puzzle_brand\": \"" + entry.pBPuzzle.brand + "\",\"t_puzzle_name\": \"" + entry.pBPuzzle.name + "\",\"n_puzzle_piece_count\": " + entry.pBPuzzle.pieceCount.ToString() + ",\"t_teammate_1\": \"" + entry.GetTeamMemberName(0) + "\",\"t_teammate_2\": \"" + entry.GetTeamMemberName(1) + "\",\"t_teammate_3\": \"" + entry.GetTeamMemberName(2) + "\",\"n_upc\": " + entry.puzzleUpc + "}";
+        string[] headers = new string[] { };
+        string url = DBURL + "SubmitPBEntry3";
 
         RequestData requestDataObj = new RequestData()
         {
             requestType = RequestType.Submit,
             url = url,
             customHeaders = headers,
-            method = Godot.HttpClient.Method.Post,
+            methodPost = true,
             requestData = jsons,
             pBEntry = entry
             
@@ -287,7 +285,7 @@ public class SuprebaseOnline : SingletonMonoBehaviour<SuprebaseOnline>
         AddResultQueue(requestDataObj);       
     }
 
-    public void UpdateEntry(PBEntry entry)
+  /* public void UpdateEntry(PBEntry entry)
     {
         GD.Print("DB UpdateEntry");
 
@@ -375,16 +373,16 @@ public class SuprebaseOnline : SingletonMonoBehaviour<SuprebaseOnline>
 
         //GD.Print(jsons);
         AddResultQueue(RequestType.Test, url, headers, Godot.HttpClient.Method.Post, jsons);
-    }
+    }*/
 
     public void RegisterNewUser(string email, string password)
     {
         string jsons = "{\"email\": \"" + email + "\",\"password\": \"" + password + "\"}";
-        string[] headers = new string[] { "apikey: " + SUPABASE_PUBLIC_KEY };
+        string[] headers = new string[] {  };
         string url = DBURL + "RegisterNewUser";
 
-        AddResultQueue(RequestType.RegisterNewUser, url, headers, Godot.HttpClient.Method.Post, jsons);
-    }*/
+        AddResultQueue(RequestType.RegisterNewUser, url, headers, true, jsons);
+    }
 
     public void LoginUser(string email, string password)
     {

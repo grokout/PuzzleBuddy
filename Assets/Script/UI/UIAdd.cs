@@ -7,6 +7,7 @@ using UI.Dates;
 using System;
 using Defective.JSON;
 using ZXing.Common;
+using static UnityEngine.EventSystems.EventTrigger;
 public class UIAdd : UIBasePanel
 {
     public TMP_InputField inputPuzzleName;
@@ -15,6 +16,7 @@ public class UIAdd : UIBasePanel
     public TMP_InputField inputTimeHours;
     public TMP_InputField inputTimeMinutes;
     public TMP_InputField inputTimeSeconds;
+    public TMP_InputField inputBarcode;
     public Button buttonSave;
     public Button buttonBack;
     public Button buttonScan;
@@ -58,6 +60,58 @@ public class UIAdd : UIBasePanel
 
         EventMsgManager.instance.AddListener(EventMsgManager.GameEventIDs.BarcodeScanned, OnBarCodeScanned);
         EventMsgManager.instance.AddListener(EventMsgManager.GameEventIDs.BrandChanged, OnBrandChanged);
+
+        buttonSave.onClick.AddListener(() =>
+        {
+            
+
+            // TODO Check if we had an entry for edit
+            PBEntry pBEntry = new PBEntry()
+            {
+                userId = OnlineManager.instance.GetUserId(),
+                puzzleName = inputPuzzleName.text,
+                brand = inputPuzzleBrand.text,
+
+            };
+            int.TryParse(inputBarcode.text, out pBEntry.puzzleUpc);
+            int.TryParse(inputPuzzlePieceCount.text, out pBEntry.puzzleCount);
+
+            int.TryParse(inputTimeHours.text, out int h);
+            int.TryParse(inputTimeMinutes.text, out int m);
+            int.TryParse(inputTimeSeconds.text, out int s);
+            float timeInMins = (h * 60) + m;
+            if (s != 0)
+            {
+                timeInMins += (s / 60f);
+            }
+
+            pBEntry.dnf = timeInMins == 0;
+            
+            pBEntry.SetTime(timeInMins);
+
+            pBEntry.date = datePicker.SelectedDate;
+
+            List<string> teamMembers = new List<string>();
+            if (dropdownTeam.value > 0)
+            {
+                teamMembers.Add(teamMemberSelector1.text);
+            }
+            if (dropdownTeam.value > 2)
+            {
+                teamMembers.Add(teamMemberSelector2.text);
+                teamMembers.Add(teamMemberSelector3.text);
+            }
+
+            pBEntry.SetTeamMembers(teamMembers);
+
+            PBPuzzleManager.instance.AddTime(pBEntry);
+            SuprebaseOnline.instance.AddEntry(pBEntry); 
+
+            UIManager.instance.ShowPanel("UIViewResults");
+            UIManager.instance.ShowPanel("UIHome");
+            UIManager.instance.HidePanel("UIAdd");
+
+        });
     }
 
 
@@ -67,6 +121,14 @@ public class UIAdd : UIBasePanel
         OnSelectTeamSize(0);
         datePicker.SelectedDate = DateTime.Now;
         buttonSave.interactable = false;
+
+        inputPuzzleName.text = "";
+        inputPuzzleBrand.text = "";
+        inputPuzzlePieceCount.text = "";
+        inputTimeHours.text = "";
+        inputTimeMinutes.text = "";
+        inputTimeSeconds.text = "";
+        inputBarcode.text = "";
     }
 
     private void OnSelectTeamSize(int index)
@@ -109,7 +171,14 @@ public class UIAdd : UIBasePanel
 
             // Remove the number from the title
 
-            
+            if (jEntry.HasField("isbn"))
+            { 
+                inputBarcode.text = jEntry.GetField("isbn").stringValue;
+            }
+            else
+            {
+                inputBarcode.text = "";
+            }    
 
             int s = title.IndexOf(pc.ToString());
             if (s < 10)

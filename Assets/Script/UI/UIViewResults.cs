@@ -3,15 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using ZXing.OneD;
 
 public class UIViewResults : UIBasePanel
 {
-    public UIListController listResultGroups;
-
+    //public UIListController listResultGroups;
+    public UIOptimizedList listResultGroups;
     void Start()
     {
         EventMsgManager.instance.AddListener(EventMsgManager.GameEventIDs.SortFiltersChanged, OnSortFiltersChanged);
         EventMsgManager.instance.AddListener(EventMsgManager.GameEventIDs.LoadComplete, OnLoadComplete);
+        EventMsgManager.instance.AddListener(EventMsgManager.GameEventIDs.UpdateEntriesForPuzzle, OnUpdateEntriesForPuzzle);
+
     }
 
     public override void Show()
@@ -36,13 +39,16 @@ public class UIViewResults : UIBasePanel
                     PBPuzzle pBPuzzle = f.Value;
                     if (pBPuzzle.entries.Count > 0)
                     {
-                        UIResultsGroup uIResultsGroup = listResultGroups.CreateMarker<UIResultsGroup>();
-                        uIResultsGroup.Set(pBPuzzle.entries[0].puzzleName, namePair.Value);
+                        listResultGroups.Add(new OPListPBPuzzleData(pBPuzzle));
                     }
                 }
             }
         }
-        listResultGroups.ResizeContainer();
+    }
+
+    void OnUpdateEntriesForPuzzle(EventMsgManager.GameEventArgs args)
+    {
+        DisplayList();
     }
 
     void OnLoadComplete(EventMsgManager.GameEventArgs args)
@@ -53,5 +59,21 @@ public class UIViewResults : UIBasePanel
     void OnSortFiltersChanged(EventMsgManager.GameEventArgs args)
     {
         DisplayList();
+    }
+}
+
+public class OPListPBPuzzleData : OptiizedListData
+{
+    public PBPuzzle pBPuzzle { get; set; }
+    public UIOptimizedListPrefab marker = null;
+
+    public OPListPBPuzzleData(PBPuzzle entry)
+    {  
+        this.pBPuzzle = entry; 
+    }
+
+    public override float GetHeight()
+    {
+        return 60 + (pBPuzzle.entries.Count * 40);
     }
 }

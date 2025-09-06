@@ -6,15 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Plugins/Barcode/Samples/Boot.unity
-    guid: e0a52783a8802784296549d34db8f6d6
-  - enabled: 1
-    path: Assets/Plugins/Barcode/Samples/Simple/SimpleDemo.unity
-    guid: 93c1548587961484cb231b7f9c4a0734
-  - enabled: 1
-    path: Assets/Plugins/Barcode/Samples/Continuous/ContinuousDemo.unity
-    guid: 744a9a2b17efe6e48b5b541a2e5c70c1
-  - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 2cda990e2423bbf4892e6590ba056729
+    path: Assets/Scenes/Home.unity
+    guid: dada71787d839c44699d31a0e588f664
   m_configObjects: {}

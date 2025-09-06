@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class UIResultsGroup : MonoBehaviour
+public class UIResultsGroup : UIOptimizedListPrefab
 {
     public Image imagePuzzle;
     public TextMeshProUGUI textLabel;
@@ -35,6 +35,11 @@ public class UIResultsGroup : MonoBehaviour
                 uIResultsRow.Set(entry);
             }
         }
-        
+        listResults.ResizeContainer();
+
+        RectTransform rectTransform = GetComponent<RectTransform>();
+        Vector2 size = rectTransform.sizeDelta;
+        size.y = listResults.GetComponent<RectTransform>().sizeDelta.y + 60; 
+        rectTransform.sizeDelta = size;
     }
 }

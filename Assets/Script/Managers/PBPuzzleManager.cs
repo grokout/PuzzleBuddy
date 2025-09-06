@@ -13,11 +13,7 @@ public class PBPuzzleManager : Singleton<PBPuzzleManager>
 
     public Dictionary<string, Dictionary<string, Dictionary<int, PBPuzzle>>> puzzles { get {  return _puzzles; } }
 
-    public void AddTime(PBPuzzleCreationArgs pBPuzzleCreationArgs, PBEntry entry)
-    {
-        //AddTime(pBPuzzleCreationArgs.brand, pBPuzzleCreationArgs.name, pBPuzzleCreationArgs.pieceCount, entry);
-    }
-    
+   
 
     string GetSearchName(string name)
     {
@@ -149,13 +145,20 @@ public class PBPuzzleManager : Singleton<PBPuzzleManager>
  
         Debug.Log(body);
 
+        if (string.IsNullOrEmpty(body))
+        {
+            return;
+        }
         List<int> dbIds = new List<int>();
 
         JSONObject jSon = new JSONObject(body);
-        foreach (JSONObject jN in jSon.list) 
+        if (jSon != null && jSon.list != null)
         {
-            int id = jN.intValue;
-            dbIds.Add(id);
+            foreach (JSONObject jN in jSon.list)
+            {
+                int id = jN.intValue;
+                dbIds.Add(id);
+            }
         }
 
         // check if any of our offline entries should be uploaded
@@ -401,6 +404,7 @@ public class PBPuzzleManager : Singleton<PBPuzzleManager>
         }
     }
     */
+    
     /*public void UpdatePuzzleInfo(string oldBrand, string oldName, int oldCount, string newBrand, string newName, int newCount)
     {
         string searchNameOld = GetSearchName(oldName);
@@ -443,7 +447,6 @@ public class PBPuzzleManager : Singleton<PBPuzzleManager>
             EventMsgManager.instance.SendEvent(EventMsgManager.GameEventIDs.UpdateBrands);
             pBPuzzle.Save();
             Save();
-        }
-        
+        }        
     }*/
 }

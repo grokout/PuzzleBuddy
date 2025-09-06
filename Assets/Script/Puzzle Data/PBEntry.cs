@@ -19,7 +19,7 @@ public class PBEntry
     public int tempRank = 0;
 
     private float _time;
-    private List<int> _teamMembers = new List<int>();
+    private List<string> _teamMembers = new List<string>();
     public int dbId = -1;
 
     public JSONObject Serialize()
@@ -33,12 +33,11 @@ public class PBEntry
         j.SetField("placed", placed);
         j.SetField("dbId", dbId);
 
-        Debug.Log("Save dbid " + dbId);
         JSONObject jArray = new JSONObject(JSONObject.Type.Array);
 
-        foreach (int teamMemberId in _teamMembers)
+        foreach (string teamMember in _teamMembers)
         {
-            jArray.Add(teamMemberId);
+            jArray.Add(teamMember);
         }
         j.SetField("TeamMembers", jArray);
 
@@ -82,7 +81,7 @@ public class PBEntry
         {
             foreach(JSONObject jObject in jArray.list)
             {
-                _teamMembers.Add(jObject.intValue);
+                _teamMembers.Add(jObject.stringValue);
             }
         }
 
@@ -245,7 +244,7 @@ public class PBEntry
         return "";
     }
 
-    public void SetTeamMembers(List<int> teamMembers)
+    public void SetTeamMembers(List<string> teamMembers)
     {
         _teamMembers = teamMembers;
     }
