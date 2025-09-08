@@ -78,7 +78,9 @@ public class OnlineManager : Singleton<OnlineManager>
     {
         //PBPuzzleManager.instance.FixDisplayNames();
         PBPuzzleManager.instance.LoadDB();
-        //SuprebaseOnline.instance.GetDisplayName(myAccount.userId);
+        onlineFriends.Load();
+
+        SuprebaseOnline.instance.GetDisplayName(myAccount.userId);
 
         onlineFriends.OnLogin();
 

@@ -124,16 +124,19 @@ public class PBEntry
 
     public virtual string GetInfoText()
     {
-        if (!string.IsNullOrEmpty(userId) && userId != OnlineManager.instance.GetUserId())
-        {
-            return OnlineManager.instance.onlineFriends.GetFriendDisplayName(userId);
-        }
+
         string info = date.ToString("MMMM dd, yyyy");
         /*foreach (int teamMemberId in _teamMembers)
         {
             info += "\n" + TeamMembersManager.instance.GetTeamMember(teamMemberId).name;
         }*/
         return info;
+    }
+
+
+    public string GetInfoText2()
+    {
+        return OnlineManager.instance.onlineFriends.GetFriendDisplayName(userId);
     }
 
     public float GetTime()

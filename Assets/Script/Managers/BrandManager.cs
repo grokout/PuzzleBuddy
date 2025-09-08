@@ -1,12 +1,15 @@
 using Defective.JSON;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BrandManager : Singleton<BrandManager>
 {
     public List<Brand> brands = new List<Brand>();
     //private ConfigFile _configFile = new ConfigFile();
+
+    private List<Brand> _localBrands = new List<Brand>();
 
     public void LoadBrands()
     {
@@ -35,6 +38,18 @@ public class BrandManager : Singleton<BrandManager>
         }
 
         // Get locally saved brands
+        string localBrands = PlayerPrefs.GetString("Brands");
+
+        if (!string.IsNullOrEmpty(localBrands))
+        {
+            JSONObject jBrands = new JSONObject(localBrands);
+            foreach (JSONObject jBrand in jBrands.list)
+            {
+                Brand brand = new Brand(jBrand);
+                _localBrands.Add(brand);
+                brands.Add(brand);
+            }
+        }
 
         Resort();
 
@@ -53,9 +68,7 @@ public class BrandManager : Singleton<BrandManager>
         {
             string brandName = "";
             jBrand.GetField(ref brandName, "brand");
-            int id = -1;
-            jBrand.GetField(ref id, "id");
-            brands.Add(new Brand(id, brandName));
+            brands.Add(new Brand(brandName));
         }
 
         Resort();
@@ -67,14 +80,24 @@ public class BrandManager : Singleton<BrandManager>
         brands = brands.OrderByDescending(o => o.favorite).ToList();
     }
 
+    public Brand AddBrand(string brandName)
+    {
+        Brand brand = new Brand(brandName);
+        _localBrands.Add(brand);
+        brands.Add(brand);  
+        Save();
+        return brand;
+    }
+
     public void Save()
     {
-        /*foreach (var brand in brands)
+        JSONObject jBrands = new JSONObject(JSONObject.Type.Array);
+        foreach (Brand brand in _localBrands)
         {
-            _configFile.SetValue("User", brand.brandName,brand.favorite);
+            jBrands.Add(brand.Serialize());
         }
 
-        _configFile.Save("user://BrandData.cfg");*/
+        PlayerPrefs.SetString("Brands",jBrands.ToString()); 
     }
 
     public void LoadFavs()
@@ -99,7 +122,6 @@ public class BrandManager : Singleton<BrandManager>
 
 public class Brand
 {
-    public int brandId = -1;
     public string brandName;
     public bool favorite = false;
 
@@ -108,9 +130,22 @@ public class Brand
         this.brandName = brandName;
     }
 
-    public Brand(int id, string brandName)
+    public Brand(JSONObject jSONObject)
     {
-        this.brandId = id;
-        this.brandName = brandName;
+        Load(jSONObject);
+    }
+
+    public JSONObject Serialize()
+    {
+        JSONObject jSONObject = new JSONObject();
+        jSONObject.SetField("brandName", brandName);
+        jSONObject.SetField("favorite", favorite);
+        return jSONObject;
+    }
+
+    public void Load(JSONObject jSONObject)
+    {
+        jSONObject.GetField(ref brandName, "brandName");
+        jSONObject.GetField(ref favorite, "favorite");
     }
 }

@@ -111,6 +111,7 @@ public class UIAdd : UIBasePanel
             SuprebaseOnline.instance.AddEntry(pBEntry); 
 
             UIManager.instance.ShowPanel("UIViewResults");
+            UIManager.instance.ShowPanel("UIViewPuzzle", new UIViewPuzzleData(PBPuzzleManager.instance.GetPuzzle(pBEntry)));  
             UIManager.instance.ShowPanel("UIHome");
             UIManager.instance.HidePanel("UIAdd");
 

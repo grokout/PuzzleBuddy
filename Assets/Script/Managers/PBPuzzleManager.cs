@@ -217,23 +217,19 @@ public class PBPuzzleManager : Singleton<PBPuzzleManager>
         }
     }
 
-    /*public void OnUpdatedUserEntriesForPuzzle(string strJson)
+    public void OnUpdatedUserEntriesForPuzzle(string strJson)
     {
-        GD.Print(strJson);
-        JSONNode json = JSON.Parse(strJson);
-
-        GD.Print("OnUpdatedUserEntriesForPuzzle Complete");
+        
+        JSONObject json = new JSONObject(strJson);
 
         if (json != null)
         {
-            if (json != null && json.Count > 0)
+            if (json != null && json.list != null && json.list.Count > 0)
             {
-                for (int i = 0; i < json.Count; i++)
+                foreach (JSONObject jsonN in json.list)
                 {
-                    JSONNode jsonN = json[i];
-                    GD.Print(jsonN.AsInt);
-
-                    SuprebaseOnline.instance.FetchEntry(jsonN.AsInt);
+                    Debug.Log(jsonN.intValue);
+                    SuprebaseOnline.instance.FetchEntry(jsonN.intValue);
                 }
             }
         
@@ -250,10 +246,10 @@ public class PBPuzzleManager : Singleton<PBPuzzleManager>
                 PBPuzzle pBPuzzle = GetPuzzle(brand, puzzleName);
 
                 EventMsgManager.instance.SendEvent(EventMsgManager.GameEventIDs.UpdateEntriesForPuzzle, new EventMsgManager.PuzzleArgs(pBPuzzle));*/
-        /*}
+        }
 
 
-    }*/
+    }
 
     bool HasDBId(int dbID)
     {
@@ -286,7 +282,7 @@ public class PBPuzzleManager : Singleton<PBPuzzleManager>
    
     public void OnFetchEntry(string record)
     {
-        Debug.Log("Entry - " + record);
+        //Debug.Log("Entry - " + record);
         PBEntry pBEntry = new PBEntry();
 
         record = record.Replace("(", "").Replace(")", "").Replace("\"","").Replace("\\", "");
@@ -308,8 +304,11 @@ public class PBPuzzleManager : Singleton<PBPuzzleManager>
         }
 
     }
-   
 
+    public PBPuzzle GetPuzzle(PBEntry pBEntry)
+    {
+        return GetPuzzle(pBEntry.brand, pBEntry.puzzleName, pBEntry.puzzleUpc);
+    }
 
     public PBPuzzle GetPuzzle(PBPuzzleCreationArgs pBPuzzleCreationArgs)
     {
@@ -373,20 +372,19 @@ public class PBPuzzleManager : Singleton<PBPuzzleManager>
         return names;
     }
 
-    /*public void GetFriendEntriesFor(string brand, string puzzleName, int pieceCount)
+    public void GetFriendEntriesFor(PBPuzzle pBPuzzle)
     {
-        PBPuzzle pBPuzzle = GetPuzzle(brand,puzzleName);
         if (pBPuzzle.loadedFriendsData)
         {
             return;
         }
         pBPuzzle.loadedFriendsData = true;
-        string searchName = GetSearchName(puzzleName);
+        string searchName = GetSearchName(pBPuzzle.name);
         foreach (KeyValuePair<string, FriendData> friendData in OnlineManager.instance.onlineFriends.friends)
         {
-            SuprebaseOnline.instance.GerUserEntriesForPuzzle(friendData.Value.id, brand, searchName, pieceCount);
+            SuprebaseOnline.instance.GerUserEntriesForPuzzle(friendData.Value.id, pBPuzzle.brand, searchName, pBPuzzle.pieceCount);
         }
-    }*/
+    }
 
     public void RemovePuzzlesBy(string id)
     {

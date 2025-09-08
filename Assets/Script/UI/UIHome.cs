@@ -18,6 +18,7 @@ public class UIHome : UIBasePanel
         buttonViewResults.onClick.AddListener(() =>
         {
             UIManager.instance.HidePanel("UIAdd");
+            UIManager.instance.HidePanel("UIFriends");
             UIManager.instance.ShowPanel("UIHome");
             UIManager.instance.ShowPanel("UIViewResults");
 
@@ -26,8 +27,17 @@ public class UIHome : UIBasePanel
         buttonAdd.onClick.AddListener(() =>
         {
             UIManager.instance.HidePanel("UIHome");
+            UIManager.instance.HidePanel("UIFriends");
             UIManager.instance.HidePanel("UIViewResults");
             UIManager.instance.ShowPanel("UIAdd");
+        });
+
+        buttonFriends.onClick.AddListener(() =>
+        {
+            UIManager.instance.HidePanel("UIAdd");
+            UIManager.instance.ShowPanel("UIHome");
+            UIManager.instance.ShowPanel("UIFriends");            
+            UIManager.instance.HidePanel("UIViewResults");
         });
     }
 

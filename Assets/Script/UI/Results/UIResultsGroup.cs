@@ -11,6 +11,8 @@ public class UIResultsGroup : UIOptimizedListPrefab
     public TextMeshProUGUI textLabel;
     public UIListController listResults;
     public Button buttonExpand;
+    public Button buttonInfo;
+    public bool alwaysExpanded = false;
 
     private PBPuzzle _pBPuzzle;
 
@@ -18,6 +20,18 @@ public class UIResultsGroup : UIOptimizedListPrefab
     void Start()
     {
         buttonExpand.onClick.AddListener(ToggleExpand);
+        if (buttonInfo != null)
+        {
+            buttonInfo.onClick.AddListener(() =>
+            {
+                UIManager.instance.ShowPanel("UIViewPuzzle", new UIViewPuzzleData(_pBPuzzle));  
+            });
+        }
+
+        if (alwaysExpanded && buttonExpand != null)
+        {
+            buttonExpand.gameObject.SetActive(false);
+        }
         
     }
 
@@ -46,6 +60,10 @@ public class UIResultsGroup : UIOptimizedListPrefab
         
         foreach (PBEntry entry in sortedList)
         {
+            if (entry.userId != OnlineManager.instance.GetUserId())
+            {
+                continue;
+            }
             UIResultsRow uIResultsRow = listResults.CreateMarker<UIResultsRow>();
             uIResultsRow.Set(entry);
 
@@ -71,8 +89,11 @@ public class UIResultsGroup : UIOptimizedListPrefab
 
         DisplayList();
 
-        uIOptimizedList.ResizeContainer();  
-        uIOptimizedList.UpdateVisualList();
+        if (uIOptimizedList != null)
+        {
+            uIOptimizedList.ResizeContainer();
+            uIOptimizedList.UpdateVisualList();
+        }
         PBPuzzleManager.instance.Save();
 
     }
@@ -89,6 +110,9 @@ public class OPListPBPuzzleData : OptiizedListData
 {
     public PBPuzzle pBPuzzle { get; set; }
     public UIOptimizedListPrefab marker = null;
+    public bool alwaysExpanded = false;
+    public float baseHeight = 60;
+    public float entryHeight = 40;
 
     public OPListPBPuzzleData(PBPuzzle entry)
     {
@@ -97,11 +121,22 @@ public class OPListPBPuzzleData : OptiizedListData
 
     public override float GetHeight()
     {
-        int c = pBPuzzle.entries.Count;
-        if (c > 1 && !pBPuzzle.ExpandedEntries())
+        int c = 0;
+        foreach (PBEntry entry in pBPuzzle.entries)
         {
-            c = 1;
+            if (entry.userId == OnlineManager.instance.GetUserId())
+            {
+                c++;
+            }
         }
-        return 60 + (c * 40);
+        
+        if (!alwaysExpanded)
+        {
+            if (c > 1 && !pBPuzzle.ExpandedEntries())
+            {
+                c = 1;
+            }
+        }
+        return baseHeight + (c * entryHeight);
     }
 }

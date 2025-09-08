@@ -13,7 +13,13 @@ public class UIBrandSelect : UIBasePanel
     void Start()
     {
         buttonBack.onClick.AddListener(() => UIManager.instance.HidePanel("UISelectBrand"));
+        buttonEdit.onClick.AddListener(() =>
+        {
+            EventMsgManager.instance.AddListener(EventMsgManager.GameEventIDs.TextEntered, OnTextEntered);
+            UIManager.instance.ShowPanel("UIEnterText", new UIEnterTextData("Enter Brand Name"));
+        });        
     }
+
 
     public override void Show(PanelData panelData = null)
     {
@@ -22,6 +28,11 @@ public class UIBrandSelect : UIBasePanel
         DisplayLists(); 
     }
 
+    public override void Hide()
+    {
+        base.Hide();
+        EventMsgManager.instance.RemoveListener(EventMsgManager.GameEventIDs.TextEntered, OnTextEntered);
+    }
 
     void DisplayLists()
     {
@@ -40,5 +51,16 @@ public class UIBrandSelect : UIBasePanel
         }
 
         listBrands.ResizeContainer();
+    }
+
+    void OnTextEntered(EventMsgManager.GameEventArgs args)
+    {
+        EventMsgManager.TextEnteredArgs textEnteredArgs = (EventMsgManager.TextEnteredArgs)args;
+
+
+        Brand brand = BrandManager.instance.AddBrand(textEnteredArgs.textEntered);
+
+        EventMsgManager.instance.SendEvent(EventMsgManager.GameEventIDs.BrandChanged, new EventMsgManager.BrandArgs(brand));
+        UIManager.instance.HidePanel("UISelectBrand");
     }
 }

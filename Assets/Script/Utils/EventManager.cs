@@ -20,7 +20,8 @@ public class EventMsgManager : Singleton<EventMsgManager>
         LoadComplete,
         BarcodeScanned,
         BrandChanged,
-        CountChanged
+        CountChanged,
+        TextEntered
     }
 
     public class GameEventArgs
@@ -92,6 +93,15 @@ public class EventMsgManager : Singleton<EventMsgManager>
         {
             this.count = count;
         }
+    }
+    public class TextEnteredArgs : GameEventArgs
+    {
+        public string textEntered;
+
+        public TextEnteredArgs(string textEntered)
+        {
+            this.textEntered = textEntered;
+        }   
     }
 
     public delegate void GameEventCallback(GameEventArgs inEventArge);

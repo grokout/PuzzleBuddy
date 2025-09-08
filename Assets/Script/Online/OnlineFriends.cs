@@ -1,14 +1,41 @@
 using Defective.JSON;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 public partial class OnlineFriends
 {
     public Dictionary<string, FriendData> friends = new Dictionary<string, FriendData>();
 
+
+    public void Save()
+    {
+        JSONObject json = new JSONObject(JSONObject.Type.Array);
+        foreach (KeyValuePair<string, FriendData> pair in friends)
+        {
+            json.Add(pair.Value.Serialize());
+        }
+        PlayerPrefs.SetString("Friends", json.ToString());
+    }
+
+    public void Load() 
+    {
+        string jsonStr = PlayerPrefs.GetString("Friends");
+        JSONObject json = new JSONObject(jsonStr);
+        if (json != null && json.list != null)
+        {
+            foreach (JSONObject obj in json.list)
+            {
+                FriendData friend = new FriendData();
+                friend.Load(obj);
+                friends.Add(friend.id, friend);
+            }
+        }
+    }
+
     public void OnLogin()
     {
-        //SuprebaseOnline.instance.GetFriends();
+        SuprebaseOnline.instance.GetFriends();
     }
 
     public string GetFriendDisplayName(string userId)
@@ -48,8 +75,9 @@ public partial class OnlineFriends
         friends.Add(friendId, friendData);
         int intId = 0;
         int.TryParse(friendId, out intId);
-        //SuprebaseOnline.instance.GetDisplayName(intId);
+        SuprebaseOnline.instance.GetDisplayName(intId);
         EventMsgManager.instance.SendEvent(EventMsgManager.GameEventIDs.FriendsUpdated);
+        Save();
     }
 
     public void AddFriendReturn(string body)
@@ -63,18 +91,20 @@ public partial class OnlineFriends
 
         foreach(JSONObject jFriend in json.list)
         {
-
             FriendData friendData = new FriendData()
             {
                 id = jFriend.ToString().Replace("\"", "")
             };
-
-            friends.Add(friendData.id, friendData);
-            int intId = 0;
-            int.TryParse(friendData.id, out intId);
-            //SuprebaseOnline.instance.GetDisplayName(intId);
+            
+            if (!friends.ContainsKey(friendData.id))
+            {
+                friends.Add(friendData.id, friendData);
+                int.TryParse(friendData.id, out int intId);
+                SuprebaseOnline.instance.GetDisplayName(intId);
+            }
         }
 
+        Save();
         EventMsgManager.instance.SendEvent(EventMsgManager.GameEventIDs.FriendsUpdated);
     }
 
@@ -87,6 +117,7 @@ public partial class OnlineFriends
             return;
         }
 
-        friends[strId].displayName = displayName;   
+        friends[strId].displayName = displayName;
+        Save();
     }
 }

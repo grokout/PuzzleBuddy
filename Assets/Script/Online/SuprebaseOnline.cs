@@ -171,6 +171,22 @@ public class SuprebaseOnline : SingletonMonoBehaviour<SuprebaseOnline>
                     }
                 }
                 break;
+            case RequestType.GetFriends:
+                {
+                    OnlineManager.instance.onlineFriends.OnGetFriends(body);
+                }
+                break;
+            case RequestType.GetDisplayName:
+                {
+                    string ret = body;
+                    ret = ret.Replace("\\", "").Replace("\"", "").Replace(" ", "").Replace("(", "").Replace(")", "");
+                    OnlineManager.instance.SetDisplayName(_requestQueue[0].userId, ret);
+                    Debug.Log(ret);
+                }
+                break;
+            case RequestType.GerUserEntriesForPuzzle:
+                PBPuzzleManager.instance.OnUpdatedUserEntriesForPuzzle(body);
+                break;
         }
 
 
@@ -193,22 +209,13 @@ public class SuprebaseOnline : SingletonMonoBehaviour<SuprebaseOnline>
             case RequestType.UpdateEntry:
                 GD.Print(body.GetStringFromUtf8());
                 break;
-            case RequestType.GerUserEntriesForPuzzle:
-                PBPuzzleManager.instance.OnUpdatedUserEntriesForPuzzle(body.GetStringFromUtf8());
-                break;
+
             case RequestType.Test:
                 GD.Print(body.GetStringFromUtf8());
                 break;
 
 
-            case RequestType.GetDisplayName:
-                {
-                    string ret = body.GetStringFromUtf8();
-                    ret = ret.Replace("\\", "").Replace("\"", "").Replace(" ", "").Replace("(", "").Replace(")", "");
-                    OnlineManager.instance.SetDisplayName(_requestQueue[0].userId, ret);
-                    GD.Print(ret);
-                }
-                break;
+
             case RequestType.SetDisplayName:
                 { 
                     string ret = body.GetStringFromUtf8();
@@ -228,13 +235,7 @@ public class SuprebaseOnline : SingletonMonoBehaviour<SuprebaseOnline>
                     GD.Print(ret);
                 }
                 break;
-            case RequestType.GetFriends:
-                {
-                    string ret = body.GetStringFromUtf8();
-                    GD.Print(ret);
-                    OnlineManager.instance.onlineFriends.OnGetFriends(ret);
-                }
-                break;
+
                 case RequestType.GetFastestTime:
                 {
                     string ret = body.GetStringFromUtf8();
@@ -340,6 +341,18 @@ public class SuprebaseOnline : SingletonMonoBehaviour<SuprebaseOnline>
         AddResultQueue( RequestType.GetTimeIds,url, headers, true, jsons);
     }
 
+    public void GerUserEntriesForPuzzle(string userId, string brandName, string puzzleName, int pieceCount)
+    {
+        Debug.Log("GerUserEntriesForPuzzle " + userId);
+
+        string jsons = "{\"userid\": \"" + userId + "\",\"t_puzzle_brand\": \"" + brandName + "\",\"t_puzzle_name\": \"" + puzzleName + "\",\"n_puzzle_piece_count\": \"" + pieceCount.ToString() + "\"}";
+        string[] headers = new string[] {  };
+        string url = DBURL + "GerUserEntriesForPuzzle";
+
+        Debug.Log(jsons);
+        AddResultQueue(RequestType.GerUserEntriesForPuzzle, url, headers, true, jsons);
+    }
+
     /*
     public void RemoveEntry(int dbId)
     {
@@ -351,17 +364,7 @@ public class SuprebaseOnline : SingletonMonoBehaviour<SuprebaseOnline>
         AddResultQueue(RequestType.DeleteEntry, url, headers, Godot.HttpClient.Method.Post, jsons);
     }
 
-    public void GerUserEntriesForPuzzle(string userId, string brandName, string puzzleName, int pieceCount)
-    {
-        GD.Print("GerUserEntriesForPuzzle " + userId);
 
-        string jsons = "{\"userid\": \"" + userId + "\",\"t_puzzle_brand\": \"" + brandName + "\",\"t_puzzle_name\": \"" + puzzleName + "\",\"n_puzzle_piece_count\": \"" + pieceCount.ToString() + "\"}";
-        string[] headers = new string[] { "apikey: " + SUPABASE_PUBLIC_KEY };
-        string url = DBURL + "GerUserEntriesForPuzzle";
-
-        GD.Print(jsons);
-        AddResultQueue(RequestType.GerUserEntriesForPuzzle, url, headers, Godot.HttpClient.Method.Post, jsons);
-    }
 
     public void Test()
     {
@@ -393,6 +396,24 @@ public class SuprebaseOnline : SingletonMonoBehaviour<SuprebaseOnline>
         AddResultQueue(RequestType.LoginUser, url, headers, true, jsons);
     }
 
+    public void GetFriends()
+    {
+        string jsons = "{\"userid\":  \"" + OnlineManager.instance.GetUserId() + "\"}";
+        string[] headers = new string[] {  };
+        string url = DBURL + "GetFriends";
+
+        AddResultQueue(RequestType.GetFriends, url, headers, true, jsons);
+    }
+
+    public void GetDisplayName(int userId)
+    {
+        string jsons = "{\"userid\": " + userId + "}";
+        string[] headers = new string[] { };
+        string url = DBURL + "GetDisplayName";
+
+        AddResultQueue(RequestType.GetDisplayName, url, headers, true, jsons, userId);
+    }
+
     /*public void SetDisplayName(string displayName)
     {
         string jsons = "{\"userid\": " + OnlineManager.instance.GetUserIdAsInt() + ",\"displayname\": \"" + displayName + "\"}";
@@ -402,14 +423,7 @@ public class SuprebaseOnline : SingletonMonoBehaviour<SuprebaseOnline>
         AddResultQueue(RequestType.SetDisplayName, url, headers, Godot.HttpClient.Method.Post, jsons);
     }
 
-    public void GetDisplayName(int userId)
-    {
-        string jsons = "{\"userid\": " + userId + "}";
-        string[] headers = new string[] { "apikey: " + SUPABASE_PUBLIC_KEY };
-        string url = DBURL + "GetDisplayName";
 
-        AddResultQueue(RequestType.GetDisplayName, url, headers, Godot.HttpClient.Method.Post, jsons, userId);
-    }
 
     public void AddFriend(string friendId)
     {
@@ -429,14 +443,7 @@ public class SuprebaseOnline : SingletonMonoBehaviour<SuprebaseOnline>
         AddResultQueue(RequestType.RemoveFriend, url, headers, Godot.HttpClient.Method.Post, jsons);        
     }
 
-    public void GetFriends()
-    {
-        string jsons = "{\"userid\":  \"" + OnlineManager.instance.GetUserId() + "\"}";
-        string[] headers = new string[] { "apikey: " + SUPABASE_PUBLIC_KEY };
-        string url = DBURL + "GetFriends";
 
-        AddResultQueue(RequestType.GetFriends, url, headers, Godot.HttpClient.Method.Post, jsons);
-    }
 
     public void GetFastestTime(PBPuzzle pBPuzzle)
     {
