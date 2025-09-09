@@ -227,34 +227,25 @@ public class PBEntry
         return pScore;
     }
 
-    public TeamMember GetTeamMember(int index)
-    {
-        if (_teamMembers.Count> index)
-        {
-            //return TeamMembersManager.instance.GetTeamMember(_teamMembers[index]);
-        }
-
-        return null; 
-    }
-
     public string GetTeamMemberName(int index)
     {
         if (_teamMembers.Count > index)
         {
+           return _teamMembers[index];
            // return TeamMembersManager.instance.GetTeamMember(_teamMembers[index]).name;
         }
 
         return "";
     }
 
+    public bool HasTeam()
+    {
+        return _teamMembers.Count > 0;
+    }
+
     public void SetTeamMembers(List<string> teamMembers)
     {
         _teamMembers = teamMembers;
-    }
-
-    public string GetTeamMembersJson()
-    {
-        return "{}";
     }
 
     public void SetDBId(int dbId)

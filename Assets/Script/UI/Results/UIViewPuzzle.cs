@@ -9,6 +9,7 @@ public class UIViewPuzzle : UIBasePanel
 {
     public Image imagePuzzle;
     public TextMeshProUGUI textLabel;
+    public TextMeshProUGUI textLabel2;
     public UIListController listResults;
     public RectTransform rectTransformPuzzle;
     public Button buttonBack;
@@ -39,6 +40,7 @@ public class UIViewPuzzle : UIBasePanel
         PBPuzzleManager.instance.GetFriendEntriesFor(_pbPuzzle);
 
         textLabel.text = _pbPuzzle.name;
+        textLabel2.text = _pbPuzzle.pieceCount.ToString() + " - " + _pbPuzzle.brand;
     }
 
     void DisplayList()
@@ -58,7 +60,7 @@ public class UIViewPuzzle : UIBasePanel
         listResults.ResizeContainer();
 
         Vector2 size = rectTransformPuzzle.sizeDelta;
-        size.y = 70 + (sortedList.Count * 65);
+        size.y = 120 + (sortedList.Count * 60);
         rectTransformPuzzle.sizeDelta = size;
     }
 

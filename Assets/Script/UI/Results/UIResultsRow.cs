@@ -12,6 +12,7 @@ public class UIResultsRow : MonoBehaviour
     public TextMeshProUGUI textPPM;
     public Button buttonEdit;
     public Image imageBG;
+    public Image imageTeam;
 
     public Color colorUser;
     public Color colorFriend;
@@ -51,5 +52,7 @@ public class UIResultsRow : MonoBehaviour
                 textInfo2.gameObject.SetActive(false);
             }
         }
+
+        imageTeam.gameObject.SetActive(_entry.HasTeam());
     }
 }

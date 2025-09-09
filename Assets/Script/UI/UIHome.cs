@@ -29,6 +29,7 @@ public class UIHome : UIBasePanel
             UIManager.instance.HidePanel("UIHome");
             UIManager.instance.HidePanel("UIFriends");
             UIManager.instance.HidePanel("UIViewResults");
+            UIManager.instance.HidePanel("UIViewPuzzle");
             UIManager.instance.ShowPanel("UIAdd");
         });
 
@@ -38,6 +39,7 @@ public class UIHome : UIBasePanel
             UIManager.instance.ShowPanel("UIHome");
             UIManager.instance.ShowPanel("UIFriends");            
             UIManager.instance.HidePanel("UIViewResults");
+            UIManager.instance.HidePanel("UIViewPuzzle");
         });
     }
 
