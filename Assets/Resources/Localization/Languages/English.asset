@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50d4e7b07c587694aa7d3c5bdc472b57, type: 3}
+  m_Name: English
+  m_EditorClassIdentifier: 
+  _translationCode: English
+  _cultures:
+  - en
+  _entries:
+  - key: PuzzleSortType.NameA
+    value: Name Ascending
+  - key: PuzzleSortType.NameD
+    value: Name Desending
+  - key: PuzzleSortType.DateA
+    value: Date Ascending
+  - key: PuzzleSortType.DateD
+    value: Date Desending
+  - key: PuzzleSortType.EnterA
+    value: Entered Date Ascending
+  - key: PuzzleSortType.EnterD
+    value: Entered Date Desending
+  - key: PuzzleSortType.TimeA
+    value: Time Ascending
+  - key: PuzzleSortType.TimeD
+    value: Time Desending
+  - key: PuzzleSortType.PieceA
+    value: Piece Count Ascending
+  - key: PuzzleSortType.PieceD
+    value: Piece Count Desending
+  - key: PuzzleSortType.BrandA
+    value: Brand Ascending
+  - key: PuzzleSortType.BrandD
+    value: Brand Desending

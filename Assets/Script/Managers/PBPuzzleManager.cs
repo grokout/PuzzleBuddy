@@ -17,6 +17,7 @@ public class PBPuzzleManager : Singleton<PBPuzzleManager>
    
 
     private int _fetchCount = 0;
+    public PuzzleSortType puzzleSortType = PuzzleSortType.EnterD;
 
     string GetSearchName(string name)
     {
@@ -25,6 +26,11 @@ public class PBPuzzleManager : Singleton<PBPuzzleManager>
 
     public void AddTime(PBEntry entry, bool save = true)
     {
+        if (entry == null || string.IsNullOrEmpty(entry.puzzleName))
+        {
+            Debug.LogError("Missing entry");
+            return;
+        }
         string searchName = GetSearchName(entry.puzzleName);
         if (!_puzzles.ContainsKey(entry.brand))
         {
@@ -91,6 +97,10 @@ public class PBPuzzleManager : Singleton<PBPuzzleManager>
             PBPuzzle pBPuzzle = new PBPuzzle();
             pBPuzzle.Load(jPuzzle);
 
+            if (string.IsNullOrEmpty(pBPuzzle.name))
+            {
+                continue;
+            }
             string searchName = GetSearchName(pBPuzzle.name);
             if (!_puzzles.ContainsKey(pBPuzzle.brand))
             {
@@ -107,8 +117,10 @@ public class PBPuzzleManager : Singleton<PBPuzzleManager>
                 _puzzles[pBPuzzle.brand][searchName].Add(pBPuzzle.upc, pBPuzzle);                
             }
             EventMsgManager.instance.SendEvent(EventMsgManager.GameEventIDs.UpdateEntriesForPuzzle, new EventMsgManager.PuzzleArgs(pBPuzzle));
-        }        
+        }
 
+        int i = PlayerPrefs.GetInt("puzzleSortType");
+        puzzleSortType = (PuzzleSortType)i;
     }
 
     public void Save()
@@ -128,6 +140,7 @@ public class PBPuzzleManager : Singleton<PBPuzzleManager>
         }
 
         PlayerPrefs.SetString("Puzzles", jArray.ToString());
+        PlayerPrefs.SetInt("puzzleSortType", (int)puzzleSortType);
     }
 
     /*

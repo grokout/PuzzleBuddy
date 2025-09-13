@@ -559,6 +559,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startOpen: 0
   listResultGroups: {fileID: 2959961309357778732}
+  buttonFilter: {fileID: 4678279688024980544}
+  buttonSort: {fileID: 5103466500001332009}
 --- !u!1 &4800855448412686897
 GameObject:
   m_ObjectHideFlags: 0

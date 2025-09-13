@@ -148,6 +148,39 @@ public class PBPuzzle
     }
 
 
+    public float GetFastestTime()
+    {
+        PBEntry pBEntry = GetFastestEntry();
+        if (pBEntry != null)
+        {
+            return pBEntry.GetTime();
+        }    
+
+        return 1000000;
+    }
+
+    public PBEntry GetFastestEntry()
+    {
+        if (entries.Count == 0)
+        {
+            return null;
+        }
+        List<PBEntry> sorted = entries.OrderBy(o => o.GetTime()).ToList();
+        return sorted[0];
+    }
+
+
+    public DateTime GetNewestData()
+    {
+        if (entries.Count == 0)
+        {
+            return DateTime.Now;
+        }
+
+        List<PBEntry> sorted = entries.OrderBy(o => o.date).ToList();
+        return sorted[0].date;
+    }
+
     /*
     public string GetInfo()
     {

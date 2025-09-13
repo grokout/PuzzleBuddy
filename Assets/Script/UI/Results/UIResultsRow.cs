@@ -20,7 +20,13 @@ public class UIResultsRow : MonoBehaviour
     private PBEntry _entry;
     void Start()
     {
+        if (buttonEdit != null)
+        {
+            buttonEdit.onClick.AddListener(() =>
+            {
 
+            });
+        }
     }
 
     public void Set(PBEntry entry)

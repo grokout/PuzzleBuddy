@@ -6,6 +6,7 @@ public class EventMsgManager : Singleton<EventMsgManager>
 {
     public enum GameEventIDs
     {
+        LanguageChanged,
         UpdateBrands,
         UpdatedDisplayName,
         FriendsUpdated,
@@ -21,7 +22,8 @@ public class EventMsgManager : Singleton<EventMsgManager>
         BarcodeScanned,
         BrandChanged,
         CountChanged,
-        TextEntered
+        TextEntered,
+        SortUpdated
     }
 
     public class GameEventArgs
